@@ -266,6 +266,7 @@ Options:\n\
 			neoscrypt   FeatherCoin, Phoenix, UFO...\n\
 			nist5       NIST5 (TalkCoin)\n\
 			penta       Pentablake hash (5x Blake 512)\n\
+			phi         PHI1612 hash (Skein + JH + CubeHash + Fugue + Gost + Echo)\n\
 			quark       Quark\n\
 			qubit       Qubit\n\
 			sha256d     SHA256d (bitcoin)\n\
