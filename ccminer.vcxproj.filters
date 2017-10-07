@@ -112,6 +112,9 @@
     <Filter Include="Source Files\CUDA\tribus">
       <UniqueIdentifier>{1e548d79-c217-4203-989a-a592fe2b2de3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\CUDA\phi">
+      <UniqueIdentifier>{c4d22e2e-bbe9-4950-9554-144cc036045e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="compat\jansson\dump.c">
@@ -593,6 +596,9 @@
     <ClInclude Include="equi\equihash.h">
       <Filter>Source Files\equi</Filter>
     </ClInclude>
+    <ClInclude Include="phi\cuda_phi_streebog_arrays.cuh">
+      <Filter>Source Files\CUDA\phi</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="cuda.cpp">
@@ -946,8 +952,11 @@
     <CudaCompile Include="equi\cuda_equi.cu">
       <Filter>Source Files\equi</Filter>
     </CudaCompile>
-    <CudaCompile Include="x11\phi.cu">
-      <Filter>Source Files\CUDA\x11</Filter>
+    <CudaCompile Include="phi\phi.cu">
+      <Filter>Source Files\CUDA\phi</Filter>
+    </CudaCompile>
+    <CudaCompile Include="phi\cuda_phi_streebog.cu">
+      <Filter>Source Files\CUDA\phi</Filter>
     </CudaCompile>
   </ItemGroup>
   <ItemGroup>

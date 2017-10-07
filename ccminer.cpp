@@ -266,7 +266,7 @@ Options:\n\
 			neoscrypt   FeatherCoin, Phoenix, UFO...\n\
 			nist5       NIST5 (TalkCoin)\n\
 			penta       Pentablake hash (5x Blake 512)\n\
-			phi         PHI1612 hash (Skein + JH + CubeHash + Fugue + Gost + Echo)\n\
+			phi         BHCoin\n\
 			quark       Quark\n\
 			qubit       Qubit\n\
 			sha256d     SHA256d (bitcoin)\n\
@@ -280,7 +280,7 @@ Options:\n\
 			skunk       Skein Cube Fugue Streebog\n\
 			s3          S3 (1Coin)\n\
 			timetravel  Machinecoin permuted x8\n\
-			tribus      Denerius\n\
+			tribus      Denarius\n\
 			vanilla     Blake256-8 (VNL)\n\
 			veltor      Thorsriddle streebog\n\
 			whirlcoin   Old Whirlcoin (Whirlpool algo)\n\
@@ -2226,9 +2226,9 @@ static void *miner_thread(void *userdata)
 			case ALGO_JACKPOT:
 			case ALGO_JHA:
 			case ALGO_LYRA2v2:
+			case ALGO_PHI:
 			case ALGO_S3:
 			case ALGO_SKUNK:
-			case ALGO_PHI:
 			case ALGO_TIMETRAVEL:
 			case ALGO_BITCORE:
 			case ALGO_X11EVO:
@@ -2408,6 +2408,9 @@ static void *miner_thread(void *userdata)
 		case ALGO_PENTABLAKE:
 			rc = scanhash_pentablake(thr_id, &work, max_nonce, &hashes_done);
 			break;
+		case ALGO_PHI:
+			rc = scanhash_phi(thr_id, &work, max_nonce, &hashes_done);
+			break;
 		case ALGO_SCRYPT:
 			rc = scanhash_scrypt(thr_id, &work, max_nonce, &hashes_done,
 				NULL, &tv_start, &tv_end);
@@ -2436,9 +2439,6 @@ static void *miner_thread(void *userdata)
 			break;
 		case ALGO_SIB:
 			rc = scanhash_sib(thr_id, &work, max_nonce, &hashes_done);
-			break;
-		case ALGO_PHI:
-			rc = scanhash_phi(thr_id, &work, max_nonce, &hashes_done);
 			break;
 		case ALGO_S3:
 			rc = scanhash_s3(thr_id, &work, max_nonce, &hashes_done);
@@ -3598,10 +3598,10 @@ void parse_arg(int key, char *arg)
 		{
 			int device_thr[MAX_GPUS] = { 0 };
 			int ngpus = cuda_num_devices();
-			char * pch = strtok (arg,",");
+			char* pch = strtok(arg,",");
 			opt_n_threads = 0;
 			while (pch != NULL && opt_n_threads < MAX_GPUS) {
-				if (pch[0] >= '0' && pch[0] <= '9' && pch[1] == '\0')
+				if (pch[0] >= '0' && pch[0] <= '9' && strlen(pch) <= 2)
 				{
 					if (atoi(pch) < ngpus)
 						device_map[opt_n_threads++] = atoi(pch);
@@ -3852,7 +3852,7 @@ int main(int argc, char *argv[])
 #endif
 			CUDART_VERSION/1000, (CUDART_VERSION % 1000)/10, arch);
 		printf("  Originally based on Christian Buchner and Christian H. project\n");
-		printf("  Include some algos from alexis78, djm34, sp, tsiv, klausT and anorganix\n\n");
+		printf("  Include some kernels from alexis78, djm34, djEzo, tsiv and krnlx.\n\n");
 		printf("BTC donation address: 1AJdfCpLWPNoAMDfHF1wD5y8VgKSSTHxPo (tpruvot)\n\n");
 	}
 

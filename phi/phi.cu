@@ -3,8 +3,16 @@
 //  PHI1612 algo
 //  Skein + JH + CubeHash + Fugue + Gost + Echo
 //
-//  Implemented by anorganix @ bitcointalk on 01.10.2017
+//  Implemented by anorganix @ bitcointalk
 //  Feel free to send some satoshis to 1Bitcoin8tfbtGAQNFxDRUVUfFgFWKoWi9
+//
+//  Changes
+//		- 01.10.2017
+//			- initial release
+//
+//		- 07.10.2017
+//			- speed increase of about 25% due to using a faster GOST implementation
+//			- changed default intensity for 10-series cards
 //
 //
 
@@ -19,11 +27,11 @@ extern "C" {
 
 #include "miner.h"
 #include "cuda_helper.h"
-#include "cuda_x11.h"
+#include "x11/cuda_x11.h"
 
 extern void skein512_cpu_setBlock_80(void *pdata);
 extern void skein512_cpu_hash_80(int thr_id, uint32_t threads, uint32_t startNounce, uint32_t *d_hash, int swap);
-extern void streebog_cpu_hash_64(int thr_id, uint32_t threads, uint32_t *d_hash);
+extern void phi_streebog_cpu_hash_64(int thr_id, uint32_t threads, uint32_t *d_hash);
 
 extern void x13_fugue512_cpu_init(int thr_id, uint32_t threads);
 extern void x13_fugue512_cpu_hash_64(int thr_id, uint32_t threads, uint32_t startNounce, uint32_t *d_nonceVector, uint32_t *d_hash, int order);
@@ -85,11 +93,15 @@ extern "C" int scanhash_phi(int thr_id, struct work* work, uint32_t max_nonce, u
 	const uint32_t first_nonce = pdata[19];
 	const int dev_id = device_map[thr_id];
 
-	int intensity = (device_sm[dev_id] >= 500 && !is_windows()) ? 19 : 18; // 2^18 = 262144 cuda threads
-	if (device_sm[dev_id] >= 600) intensity = 20;
+	int intensity = 18;
+
+	if (strstr(device_name[dev_id], "GTX 1070") || strstr(device_name[dev_id], "GTX 1080"))
+		intensity = 20;
 
 	uint32_t throughput = cuda_default_throughput(thr_id, 1U << intensity);
-	if (init[thr_id]) throughput = min(throughput, max_nonce - first_nonce);
+
+	if (init[thr_id])
+		throughput = min(throughput, max_nonce - first_nonce);
 
 	if (opt_benchmark)
 		ptarget[7] = 0xf;
@@ -131,7 +143,7 @@ extern "C" int scanhash_phi(int thr_id, struct work* work, uint32_t max_nonce, u
 		quark_jh512_cpu_hash_64(thr_id, throughput, pdata[19], NULL, d_hash[thr_id], order++);
 		x11_cubehash512_cpu_hash_64(thr_id, throughput, pdata[19], NULL, d_hash[thr_id], order++);
 		x13_fugue512_cpu_hash_64(thr_id, throughput, pdata[19], NULL, d_hash[thr_id], order++);
-		streebog_cpu_hash_64(thr_id, throughput, d_hash[thr_id]);
+		phi_streebog_cpu_hash_64(thr_id, throughput, d_hash[thr_id]);
 		x11_echo512_cpu_hash_64(thr_id, throughput, pdata[19], NULL, d_hash[thr_id], order++);
 
 		work->nonces[0] = cuda_check_hash(thr_id, throughput, pdata[19], d_hash[thr_id]);
